@@ -7,7 +7,7 @@ from social_network_api.routers import post
 post_table: dict[int, dict[str, Union[str, int]]] = {}
 
 app = FastAPI()
-app.include_router(post.router, prefix="/posts")
+app.include_router(post.router)
 
 
 @app.get("/")
