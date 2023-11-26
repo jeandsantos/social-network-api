@@ -1,20 +1,13 @@
 from pydantic import BaseModel
 
+from social_network_api.models.comment import Comment
+
 
 class UserPostIn(BaseModel):
     body: str
 
 
 class UserPost(UserPostIn):
-    id: int
-
-
-class CommentIn(BaseModel):
-    body: str
-    post_id: int
-
-
-class Comment(CommentIn):
     id: int
 
 

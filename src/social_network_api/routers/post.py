@@ -1,39 +1,16 @@
-from typing import TypedDict, Union
+from typing import Union
 
 from fastapi import APIRouter, HTTPException
 
-from social_network_api.models.post import (
-    Comment,
-    CommentIn,
-    UserPost,
-    UserPostIn,
-    UserPostWithComments,
-)
-
-
-class PostType(TypedDict):
-    body: str
-    id: int
-
-
-class CommentType(TypedDict):
-    body: str
-    post_id: int
-    id: int
-
-
-# PostType = dict[str, Union[str, int]]
-# CommentType = dict[str, Union[str, int]]
-
+from social_network_api.models.comment import Comment, CommentIn
+from social_network_api.models.post import UserPost, UserPostIn, UserPostWithComments
+from social_network_api.typings import CommentType, PostType
+from social_network_api.utils import find_post
 
 post_table: dict[int, PostType] = {}
 comment_table: dict[int, CommentType] = {}
 
 router = APIRouter()
-
-
-def find_post(post_id: int) -> PostType:
-    return post_table.get(post_id)
 
 
 @router.post("/post", response_model=UserPost, status_code=201)
@@ -54,7 +31,7 @@ async def get_all_posts() -> list[PostType]:
 
 @router.post("/comment", response_model=Comment, status_code=201)
 async def create_comment(comment: CommentIn) -> CommentType:
-    post = find_post(comment.post_id)
+    post = find_post(post_table, comment.post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
@@ -81,7 +58,7 @@ async def get_comments_on_post(post_id: int) -> list[CommentType]:
 
 @router.get("/post/{post_id}", response_model=UserPostWithComments)
 async def get_post_with_comments(post_id: int) -> dict[str, Union[PostType, list[CommentType]]]:
-    post = find_post(post_id)
+    post = find_post(post_table, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
