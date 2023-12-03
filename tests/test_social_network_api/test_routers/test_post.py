@@ -1,4 +1,5 @@
 import pytest
+from fastapi import status
 from httpx import AsyncClient
 
 
@@ -31,8 +32,8 @@ async def test_create_post(async_client: AsyncClient):
         json={"body": body},
     )
 
-    assert response.status_code == 201
-    assert {"id": 0, "body": body}.items() <= response.json().items()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert {"id": 1, "body": body}.items() <= response.json().items()
 
 
 @pytest.mark.anyio
@@ -52,7 +53,7 @@ async def test_get_all_posts_should_return_list_of_posts_with_status_code_200(
 ):
     response = await async_client.get("/post")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert isinstance(response.json(), list)
     assert isinstance(response.json()[0], dict)
     assert response.json() == [created_post]
@@ -64,8 +65,8 @@ async def test_create_comment(async_client: AsyncClient, created_post: dict):
 
     response = await async_client.post("/comment", json={"body": body, "post_id": created_post["id"]})
 
-    assert response.status_code == 201
-    assert {"id": 0, "body": body, "post_id": created_post["id"]}.items() <= response.json().items()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert {"id": 1, "body": body, "post_id": created_post["id"]}.items() <= response.json().items()
 
 
 @pytest.mark.anyio
@@ -74,7 +75,7 @@ async def test_create_comment_when_post_does_not_exist(async_client: AsyncClient
 
     response = await async_client.post("/comment", json={"body": body, "post_id": -1})
 
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Post not found"}
 
 
@@ -82,7 +83,7 @@ async def test_create_comment_when_post_does_not_exist(async_client: AsyncClient
 async def test_get_comments_on_post(async_client: AsyncClient, created_post: dict, created_comment: dict):
     response = await async_client.get(f"/post/{created_post['id']}/comment")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == [created_comment]
 
 
@@ -90,7 +91,7 @@ async def test_get_comments_on_post(async_client: AsyncClient, created_post: dic
 async def test_get_comments_on_post_without_comments(async_client: AsyncClient, created_post: dict):
     response = await async_client.get(f"/post/{created_post['id']}/comment")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
 
@@ -98,7 +99,7 @@ async def test_get_comments_on_post_without_comments(async_client: AsyncClient, 
 async def test_get_post_with_comments(async_client: AsyncClient, created_post: dict, created_comment: dict):
     response = await async_client.get(f"/post/{created_post['id']}")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "post": created_post,
         "comments": [created_comment],
@@ -109,7 +110,7 @@ async def test_get_post_with_comments(async_client: AsyncClient, created_post: d
 async def test_get_post_with_comments_when_there_are_no_comments(async_client: AsyncClient, created_post: dict):
     response = await async_client.get(f"/post/{created_post['id']}")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "post": created_post,
         "comments": [],
@@ -120,5 +121,5 @@ async def test_get_post_with_comments_when_there_are_no_comments(async_client: A
 async def test_get_post_with_comments_when_post_does_not_exist(async_client: AsyncClient):
     response = await async_client.get(f"/post/{-1}")
 
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Post not found"}

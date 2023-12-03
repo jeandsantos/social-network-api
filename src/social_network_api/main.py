@@ -14,8 +14,6 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 
-post_table: dict[int, dict[str, Union[str, int]]] = {}
-
 app = FastAPI(lifespan=lifespan)
 app.include_router(post.router)
 
