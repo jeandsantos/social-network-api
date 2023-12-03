@@ -49,7 +49,7 @@ async def get_all_comments():
 
 @router.get("/post/{post_id}/comment", response_model=list[Comment])
 async def get_comments_on_post(post_id: int):
-    query = comment_table.select().where(post_table.c.id == post_id)
+    query = comment_table.select().where(comment_table.c.post_id == post_id)
     return await database.fetch_all(query)
 
 

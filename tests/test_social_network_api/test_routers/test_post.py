@@ -43,7 +43,7 @@ async def test_create_post_without_body_should_return_422_code(async_client: Asy
         json={},
     )
 
-    assert response.status_code == 422
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert {}.items() <= response.json().items()
 
 
