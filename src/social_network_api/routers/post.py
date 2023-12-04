@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 async def find_post(post_id: int):
+    logger.info(f"Finding post for post with id {post_id}")
     query = post_table.select().where(post_table.c.id == post_id)
     return await database.fetch_one(query)
 
@@ -28,8 +29,8 @@ async def create_post(post: UserPostIn) -> PostType:
 
 @router.get("/post", response_model=list[UserPost])
 async def get_all_posts():
-    query = post_table.select()
     logger.info("Getting all posts")
+    query = post_table.select()
     logger.debug(query)
 
     return await database.fetch_all(query)
@@ -39,6 +40,7 @@ async def get_all_posts():
 async def create_comment(comment: CommentIn) -> CommentType:
     post = await find_post(comment.post_id)
     if not post:
+        logger.error(f"Post with id {comment.post_id} not found")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
     data = comment.model_dump()
@@ -57,6 +59,7 @@ async def get_all_comments():
 
 @router.get("/post/{post_id}/comment", response_model=list[Comment])
 async def get_comments_on_post(post_id: int):
+    logger.info(f"Getting comment on post {post_id}")
     query = comment_table.select().where(comment_table.c.post_id == post_id)
     logger.debug(query)
     return await database.fetch_all(query)
@@ -64,8 +67,10 @@ async def get_comments_on_post(post_id: int):
 
 @router.get("/post/{post_id}", response_model=UserPostWithComments)
 async def get_post_with_comments(post_id: int) -> dict[str, Union[PostType, list[CommentType]]]:
+    logger.info(f"Getting post {post_id} and its comments")
     post = await find_post(post_id)
     if not post:
+        logger.error(f"Post with post id {post_id} not found")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
     output = {
