@@ -43,13 +43,13 @@ def configure_logging() -> None:
                 },
                 "databases": {
                     "handlers": ["default"],
-                    "level": "DEBUG",
+                    "level": "INFO",
                 },
                 "aiosqlite": {
                     "handlers": ["default"],
-                    "level": "DEBUG",
+                    "level": "INFO",
                 },
-                "src": {
+                "social_network_api": {
                     "handlers": ["default", "rotating_file"],
                     "level": "DEBUG" if isinstance(config, DevConfig) else "INFO",
                     "propagate": False,
