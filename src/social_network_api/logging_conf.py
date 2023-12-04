@@ -39,15 +39,15 @@ def configure_logging() -> None:
             "loggers": {
                 "uvicorn": {
                     "handlers": ["default", "rotating_file"],
-                    "level": "INFO",
+                    "level": "DEBUG",
                 },
                 "databases": {
                     "handlers": ["default"],
-                    "level": "WARNING",
+                    "level": "DEBUG",
                 },
                 "aiosqlite": {
                     "handlers": ["default"],
-                    "level": "WARNING",
+                    "level": "DEBUG",
                 },
                 "src": {
                     "handlers": ["default", "rotating_file"],
