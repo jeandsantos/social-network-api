@@ -23,6 +23,8 @@ async def find_post(post_id: int):
 async def create_post(post: UserPostIn) -> PostType:
     data = post.model_dump()
     query = post_table.insert().values(data)
+    logger.debug(query)
+
     last_record_id = await database.execute(query)
     return {**data, "id": last_record_id}
 
