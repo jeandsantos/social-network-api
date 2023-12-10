@@ -18,10 +18,8 @@ async def register(user: UserIn):
             detail="A user with that email already exists",
         )
 
-    query = user_table.insert().values(
-        email=user.email,
-        password=user.password,  # TODO hash password prior to adding to database
-    )
+    # TODO hash password prior to adding to database
+    query = user_table.insert().values(email=user.email, password=user.password)
 
     logger.debug(query)
 
